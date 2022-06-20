@@ -2,7 +2,9 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var cookieParser = require("cookie-parser");
 var session = require("express-session");
+const tokenPromise = require("./token.js")
 var morgan = require("morgan");
+var ejs = require("ejs");
 var zlib = require("zlib");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const lodash = require("lodash");
@@ -11,7 +13,7 @@ var lst;
 const test = [{
   id: 1,
   name: "Binita Soni",
-  username: "BiniSOni",
+  username: "BiniSni",
   email: "bini@april.biz",
   address: {
     street: "K Lame",
@@ -34,7 +36,6 @@ const test = [{
 
 
 var app = express();
-const tokenVal = "helloworldhowareyou";
 
 app.set("port", 4000); // set our application port
 app.set("view engine", "ejs");
@@ -99,15 +100,18 @@ app
   })
   .post(async (req, res) => {
     const { username, password } = req.body;
-    console.log(req.body);
     try {
       if (username == 'admin@email.com' && password == "admin") {
-        res.cookie("user_sid", tokenVal, {
-          maxAge: 4 * 60 * 60 * 1000,
-          httpOnly: true,
-        });
-        req.session.user = { username: username, password: password };
-        res.render("dashboard");
+        tokenPromise.getNewTokenPromise().then(
+          (data) => {
+            res.cookie("user_sid", data, {
+              maxAge: 4 * 60 * 60 * 1000,
+              httpOnly: true,
+            });
+            req.session.user = { username: username, password: password };
+            res.render("dashboard");
+          }
+        ).catch(err => console.error(err));
       }
       else {
         res.render("login");
@@ -136,10 +140,10 @@ app.use(
     selfHandleResponse: true,
     pathRewrite: {
       "^/api/users": "/users",
-      "^/api/comments": "/comments",
-      "^/api/albums": "/albums",
-      "^/api/photos": "/photos",
-      "^/api/todos": "/todos",
+      // "^/api/comments": "/comments",
+      // "^/api/albums": "/albums",
+      // "^/api/photos": "/photos",
+      // "^/api/todos": "/todos",
     },
     onProxyRes: function onProxyRes(proxyRes, req, res) {
       if (req.method == 'GET' && req._parsedUrl.pathname == '/api/users') {
