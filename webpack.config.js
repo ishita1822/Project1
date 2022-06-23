@@ -12,7 +12,8 @@
 var path = require('path');
 
 module.exports = {
-    mode: 'development',
+    mode: 'production',
+    target: 'node',
     //entry: './main.ts',
     entry: path.resolve(__dirname, './src/app.js'),
     resolve: {
