@@ -4,8 +4,9 @@
   "description": "",
   "main": "src/app.js",
   "scripts": {
-    "build": "webpack",
-    "test": "nodemon src/app.js",
+    "test": "webpack",
+    "build": "nodemon src/app.js",
+    "build:dt": "node build.js",
     "start": "webpack --config ./webpack.config.js"
   },
   "author": "",
